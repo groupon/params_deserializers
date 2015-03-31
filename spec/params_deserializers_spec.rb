@@ -1,10 +1,10 @@
-require 'spec_helper'
+require './lib/params_deserializers'
 
-describe V5::Deserializer do
+describe ParamsDeserializers do
   describe 'basic' do
 
     subject do
-      Class.new(V5::Deserializer) do
+      Class.new(ParamsDeserializers) do
         attributes :id, :name
       end
     end
@@ -23,7 +23,7 @@ describe V5::Deserializer do
 
   describe 'overrides' do
     subject do
-      Class.new(V5::Deserializer) do
+      Class.new(ParamsDeserializers) do
         attributes :foo
 
         def foo
@@ -42,7 +42,7 @@ describe V5::Deserializer do
 
   describe 'has_many' do
     subject do
-      Class.new(V5::Deserializer) do
+      Class.new(ParamsDeserializers) do
         has_many :foos, to: :foos_attributes
       end
     end
