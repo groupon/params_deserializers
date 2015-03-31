@@ -1,10 +1,10 @@
-require './lib/params_deserializers'
+require_relative '../lib/params_deserializer'
 
-describe ParamsDeserializers do
+describe ParamsDeserializer do
   describe 'basic' do
 
     subject do
-      Class.new(ParamsDeserializers) do
+      Class.new(ParamsDeserializer) do
         attributes :id, :name
       end
     end
@@ -23,7 +23,7 @@ describe ParamsDeserializers do
 
   describe 'overrides' do
     subject do
-      Class.new(ParamsDeserializers) do
+      Class.new(ParamsDeserializer) do
         attributes :foo
 
         def foo
@@ -42,7 +42,7 @@ describe ParamsDeserializers do
 
   describe 'has_many' do
     subject do
-      Class.new(ParamsDeserializers) do
+      Class.new(ParamsDeserializer) do
         has_many :foos, to: :foos_attributes
       end
     end

@@ -1,4 +1,4 @@
-class ParamsDeserializers
+class ParamsDeserializer
   def initialize(params)
     @params = params
     @deserialized_params = {}
