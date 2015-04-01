@@ -57,6 +57,22 @@ describe ParamsDeserializer do
     end
   end
 
+  describe 'overrides with context' do
+    subject do
+      Class.new(ParamsDeserializer) do
+        attributes :foo
+        def foo; params[:foo] << 'baz'; end
+      end
+    end
+
+    it 'allows methods to access params' do
+      instance = subject.new({foo: 'bar'})
+      new_params = instance.deserialize
+
+      expect(new_params[:foo]).to eql('barbaz')
+    end
+  end
+
   describe 'has_many' do
     context 'with overrides' do
       subject do

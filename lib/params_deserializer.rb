@@ -52,4 +52,7 @@ class ParamsDeserializer
       end
     end
   end
+
+  private
+  attr_reader :params
 end
