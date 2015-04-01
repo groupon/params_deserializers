@@ -10,5 +10,10 @@ Gem::Specification.new do |s|
   s.homepage    = 'https://github.groupondev.com/jepinho/params-deserializers'
   s.license     = 'MIT'
 
+  s.add_dependency 'plissken'
+  s.add_dependency 'awrence'
+
   s.add_development_dependency 'rspec'
+  s.add_development_dependency 'guard-rspec'
+  s.add_development_dependency 'terminal-notifier-guard'
 end

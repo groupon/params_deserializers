@@ -1,3 +1,6 @@
+require 'plissken'
+require 'awrence'
+
 class ParamsDeserializer
   def initialize(params)
     @params = params
@@ -8,7 +11,7 @@ class ParamsDeserializer
     self.class.attrs.each do |attr|
       deserialized_params[attr] = self.send(attr)
     end
-    deserialized_params
+    deserialized_params.send(self.class.key_format)
   end
 
   class << self
@@ -23,6 +26,18 @@ class ParamsDeserializer
           @params[attr]
         end
       end
+    end
+
+    def format_keys format
+      @key_format = case format
+      when :snake_case then :to_snake_keys
+      when :camel_case then :to_camel_keys
+      when :lower_camel then :to_camelback_keys
+      end
+    end
+
+    def key_format
+      @key_format || :to_hash
     end
 
     def has_many(attr, options = {})

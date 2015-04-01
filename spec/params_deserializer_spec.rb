@@ -108,4 +108,66 @@ describe ParamsDeserializer do
       end
     end
   end
+
+  describe 'formatting keys' do
+    describe 'with no format option passed in' do
+      subject do
+        Class.new(ParamsDeserializer) do
+          attributes :camelCase
+        end
+      end
+
+      it 'does not transform key case' do
+        new_params = subject.new(camelCase: 'foo').deserialize
+        expect(new_params[:camelCase]).to eql('foo')
+        expect(new_params[:CamelCase]).to be_nil
+        expect(new_params[:camel_case]).to be_nil
+      end
+    end
+
+    describe 'snake_case' do
+      subject do
+        Class.new(ParamsDeserializer) do
+          attributes :camelCase
+          format_keys :snake_case
+        end
+      end
+
+      it 'transforms all keys to snake_case' do
+        new_params = subject.new(camelCase: 'foo').deserialize
+        expect(new_params[:camel_case]).to eql('foo')
+        expect(new_params[:camelCase]).to be_nil
+      end
+    end
+
+    describe 'CamelCase' do
+      subject do
+        Class.new(ParamsDeserializer) do
+          attributes :snake_case
+          format_keys :camel_case
+        end
+      end
+
+      it 'transforms all keys to CamelCase' do
+        new_params = subject.new(snake_case: 'foo').deserialize
+        expect(new_params[:SnakeCase]).to eql('foo')
+        expect(new_params[:snake_case]).to be_nil
+      end
+    end
+
+    describe 'lowerCamel' do
+      subject do
+        Class.new(ParamsDeserializer) do
+          attributes :snake_case
+          format_keys :lower_camel
+        end
+      end
+
+      it 'transforms all keys to lowerCamel' do
+        new_params = subject.new(snake_case: 'foo').deserialize
+        expect(new_params[:snakeCase]).to eql('foo')
+        expect(new_params[:snake_case]).to be_nil
+      end
+    end
+  end
 end
