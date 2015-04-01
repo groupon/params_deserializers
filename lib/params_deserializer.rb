@@ -1,15 +1,14 @@
 class ParamsDeserializer
   def initialize(params)
     @params = params
-    @deserialized_params = {}
   end
 
   def deserialize
+    deserialized_params = {}
     self.class.attrs.each do |attr|
-      @deserialized_params[attr] = self.send(attr)
+      deserialized_params[attr] = self.send(attr)
     end
-
-    @deserialized_params
+    deserialized_params
   end
 
   class << self
