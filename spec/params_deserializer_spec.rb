@@ -61,17 +61,34 @@ describe ParamsDeserializer do
   end
 
   describe 'has_many' do
-    subject do
-      Class.new(ParamsDeserializer) do
-        has_many :foos, to: :foos_attributes
+    context 'with overrides' do
+      subject do
+        Class.new(ParamsDeserializer) do
+          has_many :foos, to: :foos_attributes
+        end
+      end
+
+      it 'puts the new key in to new_params' do
+        instance = subject.new(foos: [{bar: 1}])
+        new_params = instance.deserialize
+
+        expect(new_params[:foos_attributes]).to eql([{bar: 1}])
       end
     end
 
-    it 'puts the new key in to new_params' do
-      instance = subject.new(foos: [{bar: 1}])
-      new_params = instance.deserialize
+    context 'without overrides' do
+      subject do
+        Class.new(ParamsDeserializer) do
+          has_many :foos
+        end
+      end
 
-      expect(new_params[:foos_attributes]).to eql([{bar: 1}])
+      it 'defaults to the key provided' do
+        instance = subject.new(foos: [{bar: 1}])
+        new_params = instance.deserialize
+
+        expect(new_params[:foos]).to eql([{bar: 1}])
+      end
     end
   end
 end

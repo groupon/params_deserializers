@@ -23,13 +23,12 @@ class ParamsDeserializer
           @params[attr]
         end
       end
-
     end
 
-    def has_many(attr, options)
-      method_name = options[:to]
-      attrs << method_name
-      define_method(method_name) do
+    def has_many(attr, options = {})
+      options[:to] ||= attr
+      attrs << options[:to]
+      define_method(options[:to]) do
         @params[attr]
       end
     end
