@@ -10,7 +10,7 @@ describe ParamsDeserializer do
     end
 
     let(:params) do
-      {id: 5, name: 'foo'}
+      { id: 5, name: 'foo' }
     end
 
     it 'copies an old param to a new param' do
@@ -18,6 +18,26 @@ describe ParamsDeserializer do
       new_params = instance.deserialize
       expect(new_params[:id]).to eql(params[:id])
       expect(new_params[:name]).to eql(params[:name])
+    end
+  end
+
+  describe 'pseudo-params' do
+    subject do
+      Class.new(ParamsDeserializer) do
+        attributes :id, :name
+        def name; 'foo'; end
+      end
+    end
+
+    let(:params) do
+      { id: 5 }
+    end
+
+    it 'allows deserialization of a param that does not exist' do
+      instance = subject.new(params)
+      new_params = instance.deserialize
+      expect(new_params[:id]).to eql(params[:id])
+      expect(new_params[:name]).to eql('foo')
     end
   end
 
