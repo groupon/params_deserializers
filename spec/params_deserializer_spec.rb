@@ -45,10 +45,7 @@ describe ParamsDeserializer do
     subject do
       Class.new(ParamsDeserializer) do
         attributes :foo
-
-        def foo
-          "bar"
-        end
+        def foo; 'bar'; end
       end
     end
 
@@ -72,7 +69,7 @@ describe ParamsDeserializer do
         instance = subject.new(foos: [{bar: 1}])
         new_params = instance.deserialize
 
-        expect(new_params[:foos_attributes]).to eql([{bar: 1}])
+        expect(new_params[:foos_attributes]).to eql([{ bar: 1 }])
       end
     end
 
@@ -87,7 +84,27 @@ describe ParamsDeserializer do
         instance = subject.new(foos: [{bar: 1}])
         new_params = instance.deserialize
 
-        expect(new_params[:foos]).to eql([{bar: 1}])
+        expect(new_params[:foos]).to eql([{ bar: 1 }])
+      end
+    end
+
+    context 'with a sub-deserializer' do
+      subject do
+        foo_deserializer = Class.new(ParamsDeserializer) do
+          attributes :baz
+        end
+
+        Class.new(ParamsDeserializer) do
+          has_many :foos, deserializer: foo_deserializer
+        end
+      end
+
+      it 'uses a provided sub-deserializer for each item in a has_many relationship' do
+        instance = subject.new(foos: [{ bar: 1, baz: 2},
+                                      { bar: 3, baz: 4 }])
+        new_params = instance.deserialize
+
+        expect(new_params[:foos]).to eql([{ baz: 2 }, { baz: 4 }])
       end
     end
   end

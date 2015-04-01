@@ -29,7 +29,11 @@ class ParamsDeserializer
       options[:to] ||= attr
       attrs << options[:to]
       define_method(options[:to]) do
-        @params[attr]
+        return @params[attr] unless options[:deserializer]
+
+        @params[attr].map do |relation|
+          options[:deserializer].new(relation).deserialize
+        end
       end
     end
   end
