@@ -41,9 +41,9 @@ class ParamsDeserializer
     end
 
     def has_many(attr, options = {})
-      options[:to] ||= attr
-      attrs << options[:to]
-      define_method(options[:to]) do
+      options[:rename_to] ||= attr
+      attrs << options[:rename_to]
+      define_method(options[:rename_to]) do
         return @params[attr] unless options[:deserializer]
 
         @params[attr].map do |relation|

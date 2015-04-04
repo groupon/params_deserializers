@@ -77,7 +77,7 @@ describe ParamsDeserializer do
     context 'with overrides' do
       subject do
         Class.new(ParamsDeserializer) do
-          has_many :foos, to: :foos_attributes
+          has_many :foos, rename_to: :foos_attributes
         end
       end
 
