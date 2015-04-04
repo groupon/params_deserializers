@@ -2,7 +2,6 @@ require_relative '../lib/params_deserializer'
 
 describe ParamsDeserializer do
   describe 'basic' do
-
     subject do
       Class.new(ParamsDeserializer) do
         attributes :id, :name
@@ -70,6 +69,27 @@ describe ParamsDeserializer do
       new_params = instance.deserialize
 
       expect(new_params[:foo]).to eql('barbaz')
+    end
+  end
+
+  describe 'single attribute' do
+    subject do
+      Class.new(ParamsDeserializer) do
+        attribute :foo, rename_to: :foo_bar
+        attribute :quux
+      end
+    end
+
+    it 'copies an old param to a new param' do
+      new_params = subject.new({ quux: 'corge' }).deserialize
+      expect(new_params[:quux]).to eql('corge')
+    end
+
+    it 'allows an attribute to be renamed' do
+      new_params = subject.new({ foo: 'baz' }).deserialize
+
+      expect(new_params[:foo_bar]).to eql('baz')
+      expect(new_params[:foo]).to be_nil
     end
   end
 

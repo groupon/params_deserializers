@@ -19,12 +19,18 @@ class ParamsDeserializer
       @attrs ||= []
     end
 
+    def attribute(attr, options = {})
+      options[:rename_to] ||= attr
+      attrs << options[:rename_to]
+      define_method(options[:rename_to]) do
+        @params[attr]
+      end
+    end
+
+
     def attributes(*args)
       args.each do |attr|
-        attrs << attr
-        define_method(attr) do
-          @params[attr]
-        end
+        attribute(attr)
       end
     end
 
