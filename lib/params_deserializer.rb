@@ -35,16 +35,12 @@ class ParamsDeserializer
       end
     end
 
-    def format_keys format
+    def format_keys(format)
       @key_format = case format
       when :snake_case then :to_snake_keys
       when :camel_case then :to_camel_keys
       when :lower_camel then :to_camelback_keys
       end
-    end
-
-    def key_format
-      @key_format || :to_hash
     end
 
     def has_many(attr, options = {})
@@ -57,6 +53,10 @@ class ParamsDeserializer
           options[:each_deserializer].new(relation).deserialize
         end
       end
+    end
+
+    def key_format
+      @key_format || :to_hash
     end
   end
 
