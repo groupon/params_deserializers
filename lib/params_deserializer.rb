@@ -4,7 +4,7 @@ require 'active_support/core_ext/hash/indifferent_access'
 
 class ParamsDeserializer
   def initialize(params)
-    @params = params
+    @params = self.class.root_key ? params[self.class.root_key] : params
   end
 
   def deserialize
@@ -12,10 +12,20 @@ class ParamsDeserializer
     self.class.attrs.each do |attr|
       deserialized_params[attr] = self.send(attr)
     end
-    deserialized_params.send(self.class.key_format).with_indifferent_access
+    with_root(deserialized_params).send(self.class.key_format).with_indifferent_access
+  end
+
+  private
+
+  attr_reader :params
+
+  def with_root(params)
+    self.class.root_key ? { self.class.root_key => params } : params
   end
 
   class << self
+    attr_reader :root_key
+
     def attrs
       @attrs ||= []
     end
@@ -27,7 +37,6 @@ class ParamsDeserializer
         @params[attr]
       end
     end
-
 
     def attributes(*args)
       args.each do |attr|
@@ -58,8 +67,9 @@ class ParamsDeserializer
     def key_format
       @key_format || :to_hash
     end
-  end
 
-  private
-  attr_reader :params
+    def root(key)
+      @root_key = key
+    end
+  end
 end

@@ -214,4 +214,18 @@ describe ParamsDeserializer do
       end
     end
   end
+
+  describe 'root key' do
+    subject do
+      Class.new(ParamsDeserializer) do
+        root :foo
+        attributes :bar
+      end
+    end
+
+    it 'keeps the root key when one is set' do
+      new_params = subject.new(foo: { bar: 'baz' }).deserialize
+      expect(new_params[:foo][:bar]).to eql('baz')
+    end
+  end
 end
