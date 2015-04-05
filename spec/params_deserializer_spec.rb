@@ -132,18 +132,18 @@ describe ParamsDeserializer do
       end
     end
 
-    context 'with a sub-deserializer' do
+    context 'with an each_deserializer' do
       subject do
         foo_deserializer = Class.new(ParamsDeserializer) do
           attributes :baz
         end
 
         Class.new(ParamsDeserializer) do
-          has_many :foos, deserializer: foo_deserializer
+          has_many :foos, each_deserializer: foo_deserializer
         end
       end
 
-      it 'uses a provided sub-deserializer for each item in a has_many relationship' do
+      it 'uses a provided each_deserializer for each item in a has_many relationship' do
         instance = subject.new(foos: [{ bar: 1, baz: 2},
                                       { bar: 3, baz: 4 }])
         new_params = instance.deserialize

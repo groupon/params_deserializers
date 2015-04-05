@@ -51,10 +51,10 @@ class ParamsDeserializer
       options[:rename_to] ||= attr
       attrs << options[:rename_to]
       define_method(options[:rename_to]) do
-        return @params[attr] unless options[:deserializer]
+        return @params[attr] unless options[:each_deserializer]
 
         @params[attr].map do |relation|
-          options[:deserializer].new(relation).deserialize
+          options[:each_deserializer].new(relation).deserialize
         end
       end
     end
