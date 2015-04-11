@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.homepage    = 'https://github.groupondev.com/jepinho/params-deserializers'
   s.license     = 'MIT'
 
-  s.add_dependency 'active_support'
+  s.add_dependency 'activesupport'
   s.add_dependency 'plissken'
   s.add_dependency 'awrence'
 
