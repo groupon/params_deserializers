@@ -1,6 +1,5 @@
 require 'plissken'
 require 'awrence'
-require 'active_support/core_ext/hash/indifferent_access'
 
 class ParamsDeserializer
   def initialize(params)
@@ -12,7 +11,7 @@ class ParamsDeserializer
     self.class.attrs.each do |attr|
       deserialized_params[attr] = self.send(attr)
     end
-    with_root(deserialized_params).send(self.class.key_format).with_indifferent_access
+    with_root(deserialized_params).send(self.class.key_format)
   end
 
   private

@@ -18,14 +18,6 @@ describe ParamsDeserializer do
       expect(new_params[:id]).to eql(params[:id])
       expect(new_params[:name]).to eql(params[:name])
     end
-
-    it 'allows indifferent access' do
-      new_params = subject.new(params).deserialize
-      expect(new_params[:id]).to eql(params[:id])
-      expect(new_params['id']).to eql(params[:id])
-      expect(new_params[:name]).to eql(params[:name])
-      expect(new_params['name']).to eql(params[:name])
-    end
   end
 
   describe 'pseudo-params' do
@@ -113,7 +105,7 @@ describe ParamsDeserializer do
         instance = subject.new(foos: [{bar: 1}])
         new_params = instance.deserialize
 
-        expect(new_params[:foos_attributes]).to eql([{ 'bar' => 1 }])
+        expect(new_params[:foos_attributes]).to eql([{ bar: 1 }])
       end
     end
 
@@ -128,7 +120,7 @@ describe ParamsDeserializer do
         instance = subject.new(foos: [{bar: 1}])
         new_params = instance.deserialize
 
-        expect(new_params[:foos]).to eql([{ 'bar' =>  1 }])
+        expect(new_params[:foos]).to eql([{ bar:  1 }])
       end
     end
 
@@ -148,7 +140,7 @@ describe ParamsDeserializer do
                                       { bar: 3, baz: 4 }])
         new_params = instance.deserialize
 
-        expect(new_params[:foos]).to eql([{ 'baz' => 2 }, { 'baz' => 4 }])
+        expect(new_params[:foos]).to eql([{ baz: 2 }, { baz: 4 }])
       end
     end
   end
