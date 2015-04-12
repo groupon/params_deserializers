@@ -17,13 +17,13 @@ describe StubController, type: :controller do
     Rails.application.reload_routes!
   end
 
-  it 'can call the deserialized method on the params object' do
+  it 'can call the deserialized_params getter' do
     put :update
-    expect(controller.params).to respond_to :deserialized
+    expect(controller).to respond_to :deserialized_params
   end
 
-  it 'gets deserialized params when calling deserialized' do
+  it 'gets deserialized params when calling the deserialized_params getter' do
     put :update, foo: 'bar', baz: 'quux'
-    expect(controller.params.deserialized).to eql(foo: 'bar')
+    expect(controller.deserialized_params).to eql(foo: 'bar')
   end
 end
