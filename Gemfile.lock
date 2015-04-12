@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     params_deserializers (0.0.1)
-      rails (~> 4.2.1)
+      rails (>= 3.2.16)
 
 GEM
   remote: https://rubygems.org/
