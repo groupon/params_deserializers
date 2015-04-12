@@ -207,17 +207,26 @@ describe ParamsDeserializer do
     end
   end
 
-  describe 'root key' do
-    subject do
-      Class.new(ParamsDeserializer) do
+  context 'with a root key' do
+    it 'keeps the root key by default' do
+      deserializer = Class.new(ParamsDeserializer) do
         root :foo
         attributes :bar
       end
+      new_params = deserializer.new(foo: { bar: 'baz' }).deserialize
+
+      expect(new_params[:foo][:bar]).to eql('baz')
     end
 
-    it 'keeps the root key when one is set' do
-      new_params = subject.new(foo: { bar: 'baz' }).deserialize
-      expect(new_params[:foo][:bar]).to eql('baz')
+    it 'discards the root key when the discard option is true' do
+      deserializer = Class.new(ParamsDeserializer) do
+        root :foo, discard: true
+        attributes :bar
+      end
+      new_params = deserializer.new(foo: { bar: 'baz' }).deserialize
+
+      expect(new_params[:foo]).to be_nil
+      expect(new_params[:bar]).to eql('baz')
     end
   end
 end

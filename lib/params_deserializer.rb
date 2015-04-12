@@ -11,19 +11,23 @@ class ParamsDeserializer
     self.class.attrs.each do |attr|
       deserialized_params[attr] = self.send(attr)
     end
-    with_root(deserialized_params).send(self.class.key_format)
+    with_root_key(deserialized_params).send(self.class.key_format)
   end
 
   private
 
   attr_reader :params
 
-  def with_root(params)
-    self.class.root_key ? { self.class.root_key => params } : params
+  def with_root_key(params)
+    if self.class.root_key && !self.class.discard_root_key
+      { self.class.root_key => params }
+    else
+      params
+    end
   end
 
   class << self
-    attr_reader :root_key
+    attr_reader :root_key, :discard_root_key
 
     def attrs
       @attrs ||= []
@@ -67,8 +71,9 @@ class ParamsDeserializer
       @key_format || :to_hash
     end
 
-    def root(key)
+    def root(key, options = {})
       @root_key = key
+      @discard_root_key = options[:discard]
     end
   end
 end
