@@ -1,11 +1,9 @@
 require 'spec_helper'
 
 class StubController < ActionController::Base
-  deserializer = Class.new(ParamsDeserializer) do
+  deserialize_params_with(Class.new(ParamsDeserializer) do
     attributes :foo
-  end
-
-  deserialize_params_with deserializer, only: :update
+  end, only: :update)
 
   def update
     render text: ''
@@ -13,11 +11,9 @@ class StubController < ActionController::Base
 end
 
 describe StubController, type: :controller do
-  before :each do
+  around :each do |example|
     Rails.application.routes.draw { get '/stub_controller' => 'stub#update' }
-  end
-
-  after :each do
+    example.run
     Rails.application.reload_routes!
   end
 
