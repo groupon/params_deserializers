@@ -28,10 +28,9 @@ describe StubController, type: :controller do
   end
 
   it 'allows indifferent access' do
-    params = { foo: 'bar', baz: 'quux' }
-    put :update, params
+    put :update, foo: 'bar'
 
-    expect(controller.deserialized_params[:foo]).to eql(params[:foo])
-    expect(controller.deserialized_params['foo']).to eql(params[:foo])
+    expect(controller.deserialized_params[:foo]).to eql('bar')
+    expect(controller.deserialized_params['foo']).to eql('bar')
   end
 end
