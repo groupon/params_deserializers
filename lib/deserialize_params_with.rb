@@ -3,7 +3,9 @@ class ActionController::Base
     attr_reader :deserialized_params
 
     before_filter(options) do
-      @deserialized_params = deserializer.new(params).deserialize
+      @deserialized_params = deserializer.new(params)
+                                         .deserialize
+                                         .with_indifferent_access
     end
   end
 end

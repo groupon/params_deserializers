@@ -24,6 +24,14 @@ describe StubController, type: :controller do
 
   it 'gets deserialized params when calling the deserialized_params getter' do
     put :update, foo: 'bar', baz: 'quux'
-    expect(controller.deserialized_params).to eql(foo: 'bar')
+    expect(controller.deserialized_params).to eql('foo' => 'bar')
+  end
+
+  it 'allows indifferent access' do
+    params = { foo: 'bar', baz: 'quux' }
+    put :update, params
+
+    expect(controller.deserialized_params[:foo]).to eql(params[:foo])
+    expect(controller.deserialized_params['foo']).to eql(params[:foo])
   end
 end
