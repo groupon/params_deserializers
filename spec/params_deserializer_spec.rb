@@ -70,6 +70,13 @@ describe ParamsDeserializer do
       expect(new_params[:foo_bar]).to eql('baz')
       expect(new_params[:foo]).to be_nil
     end
+
+    it 'creates and calls the pre-rename method' do
+      deserializer = subject.new({ foo: 'baz' })
+      expect(deserializer).to receive(:foo)
+      expect(deserializer).to_not respond_to(:foo_bar)
+      deserializer.deserialize
+    end
   end
 
   describe 'has_many' do
