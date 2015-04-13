@@ -10,7 +10,7 @@ class ParamsDeserializer
     deserialized_params = {}
     self.class.attrs.each do |attr|
       next unless instance_exec(&attr[:present_if])
-      deserialized_params[attr[:final_key]] = self.send(attr[:original_key])
+      deserialized_params[attr[:final_key]] = self.send(attr[:final_key])
     end
     optionally_include_root_key(deserialized_params).send(self.class.key_format)
   end
@@ -92,7 +92,7 @@ class ParamsDeserializer
                  final_key: options[:rename_to],
                  present_if: options[:present_if] }
 
-      define_method(attr, &block) unless method_defined?(attr)
+      define_method(options[:rename_to], &block) unless method_defined?(options[:rename_to])
     end
   end
 end

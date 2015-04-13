@@ -52,36 +52,52 @@ describe ParamsDeserializer do
   end
 
   describe 'single attribute' do
-    subject do
-      Class.new(ParamsDeserializer) do
-        def corge; 'grault'; end
-        attribute :foo, rename_to: :foo_bar
-        attributes :quux, :corge
+    context 'without a rename' do
+      subject do
+        Class.new(ParamsDeserializer) do
+          def bar; 'baz'; end
+          attributes :foo, :bar
+        end
+      end
+
+      it 'copies an old param to a new param' do
+        new_params = subject.new({ foo: 'bar' }).deserialize
+        expect(new_params[:foo]).to eql('bar')
+      end
+
+      it 'does not overwrite an override method when it is defined before `attribute` is called' do
+        new_params = subject.new({ bar: 'quux' }).deserialize
+        expect(new_params[:bar]).to eql('baz')
       end
     end
 
-    it 'copies an old param to a new param' do
-      new_params = subject.new({ quux: 'corge' }).deserialize
-      expect(new_params[:quux]).to eql('corge')
-    end
+    context 'with a rename' do
+      subject do
+        Class.new(ParamsDeserializer) do
+          def new_quux; 'corge'; end
+          attribute :foo, rename_to: :foo_bar
+          attribute :quux, rename_to: :new_quux
+        end
+      end
 
-    it 'allows an attribute to be renamed' do
-      new_params = subject.new({ foo: 'baz' }).deserialize
+      it 'allows an attribute to be renamed' do
+        new_params = subject.new({ foo: 'baz' }).deserialize
 
-      expect(new_params[:foo_bar]).to eql('baz')
-      expect(new_params[:foo]).to be_nil
-    end
+        expect(new_params[:foo_bar]).to eql('baz')
+        expect(new_params[:foo]).to be_nil
+      end
 
-    it 'does not overwrite an existing override method when defining a getter after the override method has been defined' do
-      new_params = subject.new({ corge: 'garply' }).deserialize
-      expect(new_params[:corge]).to eql('grault')
-    end
+      it 'does not overwrite an override method when it is defined before `attribute` is called' do
+        new_params = subject.new({ quux: 'grault' }).deserialize
+        expect(new_params[:new_quux]).to eql('corge')
+      end
 
-    it 'creates and calls the pre-rename method' do
-      deserializer = subject.new({ foo: 'baz' })
-      expect(deserializer).to receive(:foo)
-      expect(deserializer).to_not respond_to(:foo_bar)
-      deserializer.deserialize
+      it 'creates and calls the post-rename method' do
+        deserializer = subject.new({ foo: 'baz' })
+        expect(deserializer).to receive(:foo_bar)
+        expect(deserializer).to_not respond_to(:foo)
+        deserializer.deserialize
+      end
     end
   end
 
