@@ -54,8 +54,9 @@ describe ParamsDeserializer do
   describe 'single attribute' do
     subject do
       Class.new(ParamsDeserializer) do
+        def corge; 'grault'; end
         attribute :foo, rename_to: :foo_bar
-        attribute :quux
+        attributes :quux, :corge
       end
     end
 
@@ -69,6 +70,11 @@ describe ParamsDeserializer do
 
       expect(new_params[:foo_bar]).to eql('baz')
       expect(new_params[:foo]).to be_nil
+    end
+
+    it 'does not overwrite an existing override method when defining a getter after the override method has been defined' do
+      new_params = subject.new({ corge: 'garply' }).deserialize
+      expect(new_params[:corge]).to eql('grault')
     end
 
     it 'creates and calls the pre-rename method' do

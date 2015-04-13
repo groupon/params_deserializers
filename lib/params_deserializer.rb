@@ -92,7 +92,7 @@ class ParamsDeserializer
                  final_key: options[:rename_to],
                  present_if: options[:present_if] }
 
-      define_method(attr, &block)
+      define_method(attr, &block) unless method_defined?(attr)
     end
   end
 end
