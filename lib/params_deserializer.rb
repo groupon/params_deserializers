@@ -40,8 +40,7 @@ class ParamsDeserializer
 
     def attribute(attr, options = {})
       options[:rename_to] ||= attr
-      add_attr(attr, options)
-      define_method(attr) do
+      define_getter_method(attr, options) do
         params_root[attr]
       end
     end
@@ -62,8 +61,7 @@ class ParamsDeserializer
 
     def has_many(attr, options = {})
       options[:rename_to] ||= attr
-      add_attr(attr, options)
-      define_method(attr) do
+      define_getter_method(attr, options) do
         return params_root[attr] unless options[:each_deserializer]
 
         params_root[attr].map do |relation|
@@ -87,12 +85,14 @@ class ParamsDeserializer
 
     private
 
-    def add_attr(attr, options = {})
+    def define_getter_method(attr, options = {}, &block)
       options[:rename_to] ||= attr
       options[:present_if] ||= -> { params_root.has_key?(attr) }
       attrs << { original_key: attr,
                  final_key: options[:rename_to],
                  present_if: options[:present_if] }
+
+      define_method(attr, &block)
     end
   end
 end
