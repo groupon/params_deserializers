@@ -12,7 +12,7 @@ class ParamsDeserializer
       next unless instance_exec(&attr[:present_if])
       deserialized_params[attr[:final_key]] = self.send(attr[:final_key])
     end
-    include_root(deserialized_params).send(self.class.key_format)
+    optionally_include_root_key(deserialized_params).send(self.class.key_format)
   end
 
   private
@@ -26,16 +26,13 @@ class ParamsDeserializer
                      end
   end
 
-  def include_root(params)
-    if self.class.root_key && !self.class.discard_root_key
-      { self.class.root_key => params }
-    else
-      params
-    end
+  def optionally_include_root_key(deserialized_params)
+    return deserialized_params unless self.class.include_root_key?
+    { self.class.root_key => deserialized_params }
   end
 
   class << self
-    attr_reader :root_key, :discard_root_key
+    attr_reader :root_key
 
     def attrs
       @attrs ||= []
@@ -82,6 +79,10 @@ class ParamsDeserializer
     def root(key, options = {})
       @root_key = key
       @discard_root_key = options[:discard]
+    end
+
+    def include_root_key?
+      @root_key && !@discard_root_key
     end
 
     private
