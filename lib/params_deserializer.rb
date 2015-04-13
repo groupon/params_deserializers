@@ -1,3 +1,4 @@
+require_relative 'attribute_collection'
 require 'plissken'
 require 'awrence'
 
@@ -35,7 +36,7 @@ class ParamsDeserializer
     attr_reader :root_key
 
     def attrs
-      @attrs ||= []
+      @attrs ||= AttributeCollection.new
     end
 
     def attribute(attr, options = {})
