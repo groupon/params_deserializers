@@ -240,7 +240,7 @@ describe ParamsDeserializer do
         Class.new(ParamsDeserializer) do
           attributes :id
           attribute :name, present_if: -> { true }
-          attribute :age, present_if: -> { params[:name] == 'foo' }
+          attribute :age, present_if: -> { params[:bar] == 'baz' }
           def name; 'foo'; end
         end
       end
@@ -256,12 +256,12 @@ describe ParamsDeserializer do
       end
 
       it 'uses the present_if proc to determine whether a key should be present' do
-        params[:name] = 'foo'
+        params[:bar] = 'baz'
         params[:age] = 25
         new_params = subject.new(params).deserialize
         expect(new_params[:age]).to eql(25)
 
-        params[:name] = 'bar'
+        params[:bar] = 'quux'
         new_params = subject.new(params).deserialize
         expect(new_params).to_not have_key :age
       end
