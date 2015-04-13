@@ -3,7 +3,7 @@ require 'awrence'
 
 class ParamsDeserializer
   def initialize(params)
-    @params = self.class.root_key ? params[self.class.root_key] : params
+    @params = params
   end
 
   def deserialize
@@ -12,14 +12,21 @@ class ParamsDeserializer
       next unless instance_exec(&attr[:present_if])
       deserialized_params[attr[:final_key]] = self.send(attr[:final_key])
     end
-    with_root_key(deserialized_params).send(self.class.key_format)
+    include_root(deserialized_params).send(self.class.key_format)
   end
 
   private
 
   attr_reader :params
 
-  def with_root_key(params)
+  def params_root
+    @params_root ||= case self.class.root_key
+                     when nil then params
+                     else params[self.class.root_key]
+                     end
+  end
+
+  def include_root(params)
     if self.class.root_key && !self.class.discard_root_key
       { self.class.root_key => params }
     else
@@ -38,7 +45,7 @@ class ParamsDeserializer
       options[:rename_to] ||= attr
       add_attr(attr, options)
       define_method(options[:rename_to]) do
-        @params[attr]
+        params_root[attr]
       end
     end
 
@@ -60,9 +67,9 @@ class ParamsDeserializer
       options[:rename_to] ||= attr
       add_attr(attr, options)
       define_method(options[:rename_to]) do
-        return @params[attr] unless options[:each_deserializer]
+        return params_root[attr] unless options[:each_deserializer]
 
-        @params[attr].map do |relation|
+        params_root[attr].map do |relation|
           options[:each_deserializer].new(relation).deserialize
         end
       end
@@ -81,7 +88,7 @@ class ParamsDeserializer
 
     def add_attr(attr, options = {})
       options[:rename_to] ||= attr
-      options[:present_if] ||= -> { params.has_key?(attr) }
+      options[:present_if] ||= -> { params_root.has_key?(attr) }
       attrs << { original_key: attr,
                  final_key: options[:rename_to],
                  present_if: options[:present_if] }
