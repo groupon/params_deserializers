@@ -1,3 +1,4 @@
+require_relative 'attribute'
 require_relative 'attribute_collection'
 require 'plissken'
 require 'awrence'
@@ -10,8 +11,8 @@ class ParamsDeserializer
   def deserialize
     deserialized_params = {}
     self.class.attrs.each do |attr|
-      next unless instance_exec(&attr[:present_if])
-      deserialized_params[attr[:final_key]] = self.send(attr[:final_key])
+      next unless instance_exec(&attr.present_if)
+      deserialized_params[attr.name] = self.send(attr.name)
     end
     optionally_include_root_key(deserialized_params).send(self.class.key_format)
   end
@@ -86,11 +87,7 @@ class ParamsDeserializer
 
     def define_getter_method(attr, options = {}, &block)
       options[:rename_to] ||= attr
-      options[:present_if] ||= -> { params_root.has_key?(attr) }
-      attrs << { original_key: attr,
-                 final_key: options[:rename_to],
-                 present_if: options[:present_if] }
-
+      attrs << Attribute.new(attr, options[:rename_to], options[:present_if])
       define_method(options[:rename_to], &block) unless method_defined?(options[:rename_to])
     end
   end

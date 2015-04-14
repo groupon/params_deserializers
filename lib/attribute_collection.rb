@@ -2,9 +2,9 @@ require_relative 'errors'
 
 class AttributeCollection < Array
   def <<(new_attr)
-    if any? { |attr| attr[:final_key] == new_attr[:final_key] }
+    if any? { |attr| attr.name == new_attr.name }
       raise ParamsDeserializers::AttributeNameCollisionError,
-            "Attribute \"#{new_attr[:final_key]}\" was defined multiple times."
+            "Attribute \"#{new_attr.name}\" was defined multiple times."
     end
 
     super
