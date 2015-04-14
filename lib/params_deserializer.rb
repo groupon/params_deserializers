@@ -40,7 +40,6 @@ class ParamsDeserializer
     end
 
     def attribute(attr, options = {})
-      options[:rename_to] ||= attr
       define_getter_method(attr, options) do
         params_root[attr]
       end
@@ -61,7 +60,6 @@ class ParamsDeserializer
     end
 
     def has_many(attr, options = {})
-      options[:rename_to] ||= attr
       define_getter_method(attr, options) do
         return params_root[attr] unless options[:each_deserializer]
 
