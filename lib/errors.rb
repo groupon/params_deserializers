@@ -1,3 +1,5 @@
 class ParamsDeserializer
-  class AttributeNameCollisionError < StandardError; end
+  class AttributeCollection
+    class NameCollisionError < StandardError; end
+  end
 end

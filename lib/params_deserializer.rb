@@ -1,8 +1,3 @@
-require_relative 'attribute'
-require_relative 'attribute_collection'
-require 'plissken'
-require 'awrence'
-
 class ParamsDeserializer
   def initialize(params)
     @params = params
