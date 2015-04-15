@@ -1,3 +1,3 @@
-module ParamsDeserializers
+class ParamsDeserializer
   class AttributeNameCollisionError < StandardError; end
 end
