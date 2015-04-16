@@ -145,6 +145,25 @@ describe ParamsDeserializer do
 
         expect(new_params[:foos]).to eql([{ baz: 2 }, { baz: 4 }])
       end
+
+      it "does not override child deserializers' format_keys settings" do
+        deserializer = Class.new(ParamsDeserializer) do
+          format_keys :lower_camel
+          attribute :foo_bar
+          has_many :bazzes, { each_deserializer: Class.new(ParamsDeserializer) do
+            format_keys :snake_case
+            attributes :quuxCorge
+          end }
+        end
+
+        new_params = deserializer.new(foo_bar: 'baz', bazzes: [{ quuxCorge: 'grault' }]).deserialize
+
+        expect(new_params[:fooBar]).to eql('baz')
+        expect(new_params[:foo_bar]).to be_nil
+
+        expect(new_params[:bazzes][0][:quux_corge]).to eql('grault')
+        expect(new_params[:bazzes][0][:quuxCorge]).to be_nil
+      end
     end
 
     context 'with a nil value for the has_many relationship' do
