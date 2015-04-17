@@ -61,7 +61,7 @@ class ParamsDeserializer
 
         params_root[attr].map do |relation|
           options[:each_deserializer].new(relation).deserialize
-        end
+        end if params_root[attr].is_a?(Array)
       end
     end
 

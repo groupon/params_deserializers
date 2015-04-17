@@ -133,22 +133,37 @@ describe ParamsDeserializer do
     end
 
     context 'with an each_deserializer' do
-      subject do
-        foo_deserializer = Class.new(ParamsDeserializer) do
-          attributes :baz
-        end
-
-        Class.new(ParamsDeserializer) do
-          has_many :foos, each_deserializer: foo_deserializer
-        end
-      end
-
       it 'uses a provided each_deserializer for each item in a has_many relationship' do
-        instance = subject.new(foos: [{ bar: 1, baz: 2},
-                                      { bar: 3, baz: 4 }])
-        new_params = instance.deserialize
+        deserializer = Class.new(ParamsDeserializer) do
+          has_many :foos, { each_deserializer: Class.new(ParamsDeserializer) do
+            attributes :baz
+          end }
+        end
+
+        new_params = deserializer.new(foos: [{ bar: 1, baz: 2},
+                                             { bar: 3, baz: 4 }]).deserialize
 
         expect(new_params[:foos]).to eql([{ baz: 2 }, { baz: 4 }])
+      end
+    end
+
+    context 'with a nil value for the has_many relationship' do
+      it 'returns nil without an each_deserializer' do
+        deserializer = Class.new(ParamsDeserializer) do
+          has_many :foos
+        end
+
+        expect(deserializer.new(foos: nil).deserialize[:foos]).to be_nil
+      end
+
+      it 'returns nil with an each_deserializer' do
+        deserializer = Class.new(ParamsDeserializer) do
+          has_many :foos, { each_deserializer: Class.new(ParamsDeserializer) do
+            attributes :baz
+          end }
+        end
+
+        expect(deserializer.new(foos: nil).deserialize[:foos]).to be_nil
       end
     end
   end
