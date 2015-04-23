@@ -145,25 +145,6 @@ describe ParamsDeserializer do
 
         expect(new_params[:foos]).to eql([{ baz: 2 }, { baz: 4 }])
       end
-
-      it "does not override child deserializers' format_keys settings" do
-        deserializer = Class.new(ParamsDeserializer) do
-          format_keys :lower_camel
-          attribute :foo_bar
-          has_many :bazzes, { each_deserializer: Class.new(ParamsDeserializer) do
-            format_keys :snake_case
-            attributes :quuxCorge
-          end }
-        end
-
-        new_params = deserializer.new(foo_bar: 'baz', bazzes: [{ quuxCorge: 'grault' }]).deserialize
-
-        expect(new_params[:fooBar]).to eql('baz')
-        expect(new_params[:foo_bar]).to be_nil
-
-        expect(new_params[:bazzes][0][:quux_corge]).to eql('grault')
-        expect(new_params[:bazzes][0][:quuxCorge]).to be_nil
-      end
     end
 
     context 'with a nil value for the has_many relationship' do
@@ -188,6 +169,41 @@ describe ParamsDeserializer do
   end
 
   describe 'formatting keys' do
+    it 'formats both root keys and child keys' do
+      deserializer = Class.new(ParamsDeserializer) do
+        format_keys :snake_case
+        root :fooBar
+        attributes :bazQuux
+      end
+      new_params = deserializer.new(fooBar: { bazQuux: 'corge' }).deserialize
+
+      expect(new_params[:fooBar]).to be_nil
+      expect(new_params[:foo_bar][:bazQuux]).to be_nil
+      expect(new_params[:foo_bar][:baz_quux]).to eql 'corge'
+    end
+
+    it 'does not format keys of a child deserializer' do
+      deserializer = Class.new(ParamsDeserializer) do
+        format_keys :lower_camel
+        attribute :foo_bar
+        has_many :baz_things, { each_deserializer: Class.new(ParamsDeserializer) do
+          format_keys :snake_case
+          attributes :quuxCorge
+        end }
+      end
+
+      new_params = deserializer.new(foo_bar: 'baz', baz_things: [{ quuxCorge: 'grault' }]).deserialize
+
+      expect(new_params[:fooBar]).to eql('baz')
+      expect(new_params[:foo_bar]).to be_nil
+
+      expect(new_params[:bazThings]).to be_an Array
+      expect(new_params[:baz_things]).to be_nil
+
+      expect(new_params[:bazThings][0][:quux_corge]).to eql('grault')
+      expect(new_params[:bazThings][0][:quuxCorge]).to be_nil
+    end
+
     describe 'with no format option passed in' do
       subject do
         Class.new(ParamsDeserializer) do
