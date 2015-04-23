@@ -132,10 +132,10 @@ describe ParamsDeserializer do
       end
     end
 
-    context 'with an each_deserializer' do
-      it 'uses a provided each_deserializer for each item in a has_many relationship' do
+    context 'with a child deserializer' do
+      it 'uses a provided child deserializer for each item in a has_many relationship' do
         deserializer = Class.new(ParamsDeserializer) do
-          has_many :foos, { each_deserializer: Class.new(ParamsDeserializer) do
+          has_many :foos, { deserializer: Class.new(ParamsDeserializer) do
             attributes :baz
           end }
         end
@@ -148,7 +148,7 @@ describe ParamsDeserializer do
     end
 
     context 'with a nil value for the has_many relationship' do
-      it 'returns nil without an each_deserializer' do
+      it 'returns nil without a child deserializer' do
         deserializer = Class.new(ParamsDeserializer) do
           has_many :foos
         end
@@ -156,9 +156,9 @@ describe ParamsDeserializer do
         expect(deserializer.new(foos: nil).deserialize[:foos]).to be_nil
       end
 
-      it 'returns nil with an each_deserializer' do
+      it 'returns nil with a child deserializer' do
         deserializer = Class.new(ParamsDeserializer) do
-          has_many :foos, { each_deserializer: Class.new(ParamsDeserializer) do
+          has_many :foos, { deserializer: Class.new(ParamsDeserializer) do
             attributes :baz
           end }
         end
@@ -185,7 +185,7 @@ describe ParamsDeserializer do
     it 'does not format keys of a child deserializer' do
       deserializer = Class.new(ParamsDeserializer) do
         format_keys :snake_case
-        has_many :fooBars, { each_deserializer: Class.new(ParamsDeserializer) do
+        has_many :fooBars, { deserializer: Class.new(ParamsDeserializer) do
           attributes :bazQuux
         end }
       end
@@ -199,7 +199,7 @@ describe ParamsDeserializer do
     it 'allows different key formats for parent and child deserializers' do
       deserializer = Class.new(ParamsDeserializer) do
         format_keys :snake_case
-        has_many :fooBars, { each_deserializer: Class.new(ParamsDeserializer) do
+        has_many :fooBars, { deserializer: Class.new(ParamsDeserializer) do
           format_keys :lower_camel
           attributes :baz_quux
         end }

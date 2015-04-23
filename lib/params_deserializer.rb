@@ -67,10 +67,10 @@ class ParamsDeserializer
 
     def has_many(attr, options = {})
       define_getter_method(attr, options) do
-        return params_root[attr] unless options[:each_deserializer]
+        return params_root[attr] unless options[:deserializer]
 
         params_root[attr].map do |relation|
-          options[:each_deserializer].new(relation).deserialize
+          options[:deserializer].new(relation).deserialize
         end if params_root[attr].is_a?(Array)
       end
     end
