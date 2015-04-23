@@ -27,21 +27,21 @@ class ParamsDeserializer
 
   def optionally_include_root_key(deserialized_params)
     return deserialized_params unless self.class.include_root_key?
-    { to_key_format(self.class.root_key) => deserialized_params }
+    { format_key(self.class.root_key) => deserialized_params }
   end
 
-  def format_keys(hash)
-    return hash unless self.class.key_format
-    Hash[hash.map { |k, v| [to_key_format(k), v] }]
-  end
-
-  def to_key_format(key)
+  def format_key(key)
     case self.class.key_format
     when :snake_case then key.to_s.underscore.to_sym
     when :camel_case then key.to_s.camelize.to_sym
     when :lower_camel then key.to_s.camelize(:lower).to_sym
     else key
     end
+  end
+
+  def format_keys(hash)
+    return hash unless self.class.key_format
+    Hash[hash.map { |k, v| [format_key(k), v] }]
   end
 
   class << self
