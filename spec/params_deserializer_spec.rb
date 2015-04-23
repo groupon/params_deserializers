@@ -184,24 +184,31 @@ describe ParamsDeserializer do
 
     it 'does not format keys of a child deserializer' do
       deserializer = Class.new(ParamsDeserializer) do
-        format_keys :lower_camel
-        attribute :foo_bar
-        has_many :baz_things, { each_deserializer: Class.new(ParamsDeserializer) do
-          format_keys :snake_case
-          attributes :quuxCorge
+        format_keys :snake_case
+        has_many :fooBars, { each_deserializer: Class.new(ParamsDeserializer) do
+          attributes :bazQuux
         end }
       end
 
-      new_params = deserializer.new(foo_bar: 'baz', baz_things: [{ quuxCorge: 'grault' }]).deserialize
+      new_params = deserializer.new(fooBars: [{ bazQuux: 'corge' }]).deserialize
 
-      expect(new_params[:fooBar]).to eql('baz')
-      expect(new_params[:foo_bar]).to be_nil
+      expect(new_params[:foo_bars][0][:bazQuux]).to eql('corge')
+      expect(new_params[:foo_bars][0][:baz_quux]).to be_nil
+    end
 
-      expect(new_params[:bazThings]).to be_an Array
-      expect(new_params[:baz_things]).to be_nil
+    it 'allows different key formats for parent and child deserializers' do
+      deserializer = Class.new(ParamsDeserializer) do
+        format_keys :snake_case
+        has_many :fooBars, { each_deserializer: Class.new(ParamsDeserializer) do
+          format_keys :lower_camel
+          attributes :baz_quux
+        end }
+      end
 
-      expect(new_params[:bazThings][0][:quux_corge]).to eql('grault')
-      expect(new_params[:bazThings][0][:quuxCorge]).to be_nil
+      new_params = deserializer.new(fooBars: [{ baz_quux: 'corge' }]).deserialize
+
+      expect(new_params[:foo_bars][0][:bazQuux]).to eql('corge')
+      expect(new_params[:foo_bars][0][:baz_quux]).to be_nil
     end
 
     describe 'with no format option passed in' do
