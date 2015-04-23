@@ -1,3 +1,5 @@
+require 'active_support/core_ext/string/inflections'
+
 class ParamsDeserializer
   def initialize(params)
     @params = params
@@ -9,12 +11,31 @@ class ParamsDeserializer
       next unless instance_exec(&attr.present_if)
       deserialized_params[attr.name] = self.send(attr.name)
     end
-    optionally_include_root_key(deserialized_params).send(self.class.key_format)
+    format_keys(deserialized_params)
   end
 
   private
 
   attr_reader :params
+
+  def format_key(key)
+    case self.class.key_format
+    when :snake_case then key.to_s.underscore.to_sym
+    when :camel_case then key.to_s.camelize.to_sym
+    when :lower_camel then key.to_s.camelize(:lower).to_sym
+    else key
+    end
+  end
+
+  def format_keys(hash)
+    hash = Hash[hash.map { |k, v| [format_key(k), v] }] if self.class.key_format
+    optionally_include_root_key(hash)
+  end
+
+  def optionally_include_root_key(hash)
+    return hash unless self.class.include_root_key?
+    { format_key(self.class.root_key) => hash }
+  end
 
   def params_root
     @params_root ||= case self.class.root_key
@@ -23,13 +44,10 @@ class ParamsDeserializer
                      end
   end
 
-  def optionally_include_root_key(deserialized_params)
-    return deserialized_params unless self.class.include_root_key?
-    { self.class.root_key => deserialized_params }
-  end
-
   class << self
     attr_reader :root_key
+    attr_accessor :key_format
+    alias_method :format_keys, :key_format=
 
     def attrs
       @attrs ||= AttributeCollection.new
@@ -47,14 +65,6 @@ class ParamsDeserializer
       end
     end
 
-    def format_keys(format)
-      @key_format = case format
-      when :snake_case then :to_snake_keys
-      when :camel_case then :to_camel_keys
-      when :lower_camel then :to_camelback_keys
-      end
-    end
-
     def has_many(attr, options = {})
       define_getter_method(attr, options) do
         return params_root[attr] unless options[:each_deserializer]
@@ -63,10 +73,6 @@ class ParamsDeserializer
           options[:each_deserializer].new(relation).deserialize
         end if params_root[attr].is_a?(Array)
       end
-    end
-
-    def key_format
-      @key_format || :to_hash
     end
 
     def root(key, options = {})
