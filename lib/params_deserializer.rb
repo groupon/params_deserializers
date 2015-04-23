@@ -11,24 +11,12 @@ class ParamsDeserializer
       next unless instance_exec(&attr.present_if)
       deserialized_params[attr.name] = self.send(attr.name)
     end
-    optionally_include_root_key(format_keys(deserialized_params))
+    format_keys(deserialized_params)
   end
 
   private
 
   attr_reader :params
-
-  def params_root
-    @params_root ||= case self.class.root_key
-                     when nil then params
-                     else params[self.class.root_key]
-                     end
-  end
-
-  def optionally_include_root_key(deserialized_params)
-    return deserialized_params unless self.class.include_root_key?
-    { format_key(self.class.root_key) => deserialized_params }
-  end
 
   def format_key(key)
     case self.class.key_format
@@ -40,8 +28,20 @@ class ParamsDeserializer
   end
 
   def format_keys(hash)
-    return hash unless self.class.key_format
-    Hash[hash.map { |k, v| [format_key(k), v] }]
+    hash = Hash[hash.map { |k, v| [format_key(k), v] }] if self.class.key_format
+    optionally_include_root_key(hash)
+  end
+
+  def optionally_include_root_key(hash)
+    return hash unless self.class.include_root_key?
+    { format_key(self.class.root_key) => hash }
+  end
+
+  def params_root
+    @params_root ||= case self.class.root_key
+                     when nil then params
+                     else params[self.class.root_key]
+                     end
   end
 
   class << self
