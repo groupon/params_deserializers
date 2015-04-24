@@ -27,10 +27,8 @@ describe StubController, type: :controller do
     expect(controller.deserialized_params).to eql('foo' => 'bar')
   end
 
-  it 'allows indifferent access' do
+  it 'gets a HashWithIndifferentAccess from the deserialized_params getter' do
     put :update, foo: 'bar'
-
-    expect(controller.deserialized_params[:foo]).to eql('bar')
-    expect(controller.deserialized_params['foo']).to eql('bar')
+    expect(controller.deserialized_params).to be_a ::ActiveSupport::HashWithIndifferentAccess
   end
 end
