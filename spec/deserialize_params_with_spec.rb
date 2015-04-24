@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 class StubController < ActionController::Base
+  include ParamsDeserializers
+
   deserialize_params_with(Class.new(ParamsDeserializer) do
     attributes :foo
   end, only: :update)
