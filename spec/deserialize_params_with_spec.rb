@@ -26,11 +26,8 @@ describe StubController, type: :controller do
 
   it 'gets deserialized params when calling the deserialized_params getter' do
     put :update, foo: 'bar', baz: 'quux'
-    expect(controller.deserialized_params).to eql('foo' => 'bar')
-  end
 
-  it 'gets a HashWithIndifferentAccess from the deserialized_params getter' do
-    put :update, foo: 'bar'
-    expect(controller.deserialized_params).to be_a ::ActiveSupport::HashWithIndifferentAccess
+    expected = { foo: 'bar' }.with_indifferent_access
+    expect(controller.deserialized_params).to eql expected
   end
 end

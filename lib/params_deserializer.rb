@@ -9,7 +9,7 @@ class ParamsDeserializer
       next unless instance_exec(&attr.present_if)
       deserialized_params[attr.name] = self.send(attr.name)
     end
-    format_keys(deserialized_params)
+    format_keys(deserialized_params).with_indifferent_access
   end
 
   private

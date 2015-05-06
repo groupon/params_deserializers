@@ -8,9 +8,7 @@ module ParamsDeserializers
   module ClassMethods
     def deserialize_params_with(deserializer, options = {})
       before_filter(options) do
-        @deserialized_params = deserializer.new(params)
-                                           .deserialize
-                                           .with_indifferent_access
+        @deserialized_params = deserializer.new(params).deserialize
       end
     end
   end

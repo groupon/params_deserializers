@@ -1,6 +1,13 @@
 require_relative '../lib/params_deserializer'
 
 describe ParamsDeserializer do
+  describe '#deserialize' do
+    it 'returns a HashWithIndifferentAccess' do
+      deserializer = Class.new(ParamsDeserializer).new({})
+      expect(deserializer.deserialize).to be_a ::ActiveSupport::HashWithIndifferentAccess
+    end
+  end
+
   describe 'basic' do
     subject do
       Class.new(ParamsDeserializer) do
@@ -113,7 +120,8 @@ describe ParamsDeserializer do
         instance = subject.new(foos: [{bar: 1}])
         new_params = instance.deserialize
 
-        expect(new_params[:foos_attributes]).to eql([{ bar: 1 }])
+        expect(new_params).to have_key :foos_attributes
+        expect(new_params).not_to have_key :foos
       end
     end
 
@@ -128,7 +136,7 @@ describe ParamsDeserializer do
         instance = subject.new(foos: [{bar: 1}])
         new_params = instance.deserialize
 
-        expect(new_params[:foos]).to eql([{ bar:  1 }])
+        expect(new_params).to have_key :foos
       end
     end
 
@@ -143,7 +151,8 @@ describe ParamsDeserializer do
         new_params = deserializer.new(foos: [{ bar: 1, baz: 2},
                                              { bar: 3, baz: 4 }]).deserialize
 
-        expect(new_params[:foos]).to eql([{ baz: 2 }, { baz: 4 }])
+        expected = [{ baz: 2 }, { baz: 4 }].map(&:with_indifferent_access)
+        expect(new_params[:foos]).to eql expected
       end
     end
 
