@@ -1,5 +1,3 @@
-require 'active_support/core_ext/string/inflections'
-
 class ParamsDeserializer
   def initialize(params)
     @params = params
