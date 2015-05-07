@@ -5,9 +5,11 @@ describe 'deserialize_params_with', type: :controller do
     controller do
       include ParamsDeserializers
 
-      deserialize_params_with(Class.new(ParamsDeserializer) do
+      deserializer = Class.new(ParamsDeserializer) do
         attributes :foo
-      end, only: :update)
+      end
+
+      deserialize_params_with deserializer, only: :update
 
       def update
         render text: ''
@@ -34,9 +36,11 @@ describe 'deserialize_params_with', type: :controller do
     controller do
       include ParamsDeserializers
 
-      deserialize_params_with(Class.new(ParamsDeserializer) do
+      deserializer = Class.new(ParamsDeserializer) do
         attributes :foo
-      end, as: :deserialized_params_foo, only: :update)
+      end
+
+      deserialize_params_with deserializer, as: :deserialized_params_foo, only: :update
 
       def update
         render text: ''

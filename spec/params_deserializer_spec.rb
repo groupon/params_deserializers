@@ -143,9 +143,11 @@ describe ParamsDeserializer do
     context 'with a child deserializer' do
       it 'uses a provided child deserializer for each item in a has_many relationship' do
         deserializer = Class.new(ParamsDeserializer) do
-          has_many :foos, { deserializer: Class.new(ParamsDeserializer) do
+          child_deserializer = Class.new(ParamsDeserializer) do
             attributes :baz
-          end }
+          end
+
+          has_many :foos, deserializer: child_deserializer
         end
 
         new_params = deserializer.new(foos: [{ bar: 1, baz: 2},
@@ -167,9 +169,11 @@ describe ParamsDeserializer do
 
       it 'returns nil with a child deserializer' do
         deserializer = Class.new(ParamsDeserializer) do
-          has_many :foos, { deserializer: Class.new(ParamsDeserializer) do
+          child_deserializer = Class.new(ParamsDeserializer) do
             attributes :baz
-          end }
+          end
+
+          has_many :foos, deserializer: child_deserializer
         end
 
         expect(deserializer.new(foos: nil).deserialize[:foos]).to be_nil
@@ -194,9 +198,12 @@ describe ParamsDeserializer do
     it 'does not format keys of a child deserializer' do
       deserializer = Class.new(ParamsDeserializer) do
         format_keys :snake_case
-        has_many :fooBars, { deserializer: Class.new(ParamsDeserializer) do
+
+        child_deserializer = Class.new(ParamsDeserializer) do
           attributes :bazQuux
-        end }
+        end
+
+        has_many :fooBars, deserializer: child_deserializer
       end
 
       new_params = deserializer.new(fooBars: [{ bazQuux: 'corge' }]).deserialize
@@ -208,10 +215,13 @@ describe ParamsDeserializer do
     it 'allows different key formats for parent and child deserializers' do
       deserializer = Class.new(ParamsDeserializer) do
         format_keys :snake_case
-        has_many :fooBars, { deserializer: Class.new(ParamsDeserializer) do
+
+        child_deserializer = Class.new(ParamsDeserializer) do
           format_keys :lower_camel
           attributes :baz_quux
-        end }
+        end
+
+        has_many :fooBars, deserializer: child_deserializer
       end
 
       new_params = deserializer.new(fooBars: [{ baz_quux: 'corge' }]).deserialize
