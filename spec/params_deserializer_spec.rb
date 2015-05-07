@@ -350,19 +350,13 @@ describe ParamsDeserializer do
         end
       end
 
-      let(:params) do
-        { id: 5 }
-      end
-
       it 'allows deserialization of a param that does not exist' do
-        new_params = subject.new(params).deserialize
-        expect(new_params[:id]).to eql(params[:id])
+        new_params = subject.new({}).deserialize
         expect(new_params[:name]).to eql('foo')
       end
 
       it 'uses the present_if proc to determine whether a key should be present' do
-        params[:bar] = 'baz'
-        params[:age] = 25
+        params = { bar: 'baz', age: 25 }
         new_params = subject.new(params).deserialize
         expect(new_params[:age]).to eql(25)
 
