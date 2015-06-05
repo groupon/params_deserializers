@@ -292,25 +292,36 @@ describe ParamsDeserializer do
   end
 
   context 'with a root key' do
-    it 'keeps the root key by default' do
-      deserializer = Class.new(ParamsDeserializer) do
+    let(:deserializer) do
+      Class.new(ParamsDeserializer) do
         root :foo
         attributes :bar
       end
+    end
+
+    it 'keeps the root key by default' do
       new_params = deserializer.new(foo: { bar: 'baz' }).deserialize
 
       expect(new_params[:foo][:bar]).to eql('baz')
     end
 
-    it 'discards the root key when the discard option is true' do
-      deserializer = Class.new(ParamsDeserializer) do
-        root :foo, discard: true
-        attributes :bar
+    describe 'when the incoming params are missing the root key' do
+      it 'raises a MissingRootKey exception' do
+        expect do
+          deserializer.new(bar: 'baz').deserialize
+        end.to raise_error ParamsDeserializer::MissingRootKeyError
       end
-      new_params = deserializer.new(foo: { bar: 'baz' }).deserialize
+    end
 
-      expect(new_params[:foo]).to be_nil
-      expect(new_params[:bar]).to eql('baz')
+    context 'when the discard option is true' do
+      before { deserializer.root :foo, discard: true }
+
+      it 'discards the root key when the discard option is true' do
+        new_params = deserializer.new(foo: { bar: 'baz' }).deserialize
+
+        expect(new_params[:foo]).to be_nil
+        expect(new_params[:bar]).to eql('baz')
+      end
     end
   end
 

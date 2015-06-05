@@ -1,4 +1,6 @@
 class ParamsDeserializer
+  class MissingRootKeyError < StandardError; end
+
   def initialize(params)
     @params = params
   end
@@ -36,10 +38,16 @@ class ParamsDeserializer
   end
 
   def params_root
-    @params_root ||= case self.class.root_key
-                     when nil then params
-                     else params[self.class.root_key]
-                     end
+    return @params_root if @params_root
+
+    if self.class.root_key
+      unless params.has_key?(self.class.root_key)
+        raise MissingRootKeyError, "Root key #{self.class.root_key} is missing from params."
+      end
+      @params_root = params[self.class.root_key]
+    else
+      @params_root = params
+    end
   end
 
   class << self
