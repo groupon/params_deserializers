@@ -308,7 +308,7 @@ describe ParamsDeserializer do
     describe 'when the incoming params are missing the root key' do
       it 'raises a MissingRootKey exception' do
         expect do
-          deserializer.new(bar: 'baz').deserialize
+          deserializer.new(bar: 'baz')
         end.to raise_error ParamsDeserializer::MissingRootKeyError
       end
     end

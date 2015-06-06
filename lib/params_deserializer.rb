@@ -3,6 +3,7 @@ class ParamsDeserializer
 
   def initialize(params)
     @params = params
+    verify_root_key_exists
   end
 
   def deserialize
@@ -41,12 +42,15 @@ class ParamsDeserializer
     return @params_root if @params_root
 
     if self.class.root_key
-      unless params.has_key?(self.class.root_key)
-        raise MissingRootKeyError, "Root key #{self.class.root_key} is missing from params."
-      end
       @params_root = params[self.class.root_key]
     else
       @params_root = params
+    end
+  end
+
+  def verify_root_key_exists
+    if self.class.root_key && !params.has_key?(self.class.root_key)
+      raise MissingRootKeyError, "Root key #{self.class.root_key} is missing from params."
     end
   end
 
