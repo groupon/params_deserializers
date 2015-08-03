@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.homepage    = 'https://github.groupondev.com/jepinho/params-deserializers'
   s.license     = 'MIT'
 
-  s.files = Dir['lib/params_deserializers.rb', 'Rakefile', 'README.md']
+  s.files = Dir['lib/**/*', 'Rakefile', 'README.md']
 
   s.add_dependency 'rails', '>= 3.2.16'
 
