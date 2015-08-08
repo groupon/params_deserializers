@@ -1,5 +1,3 @@
-require_relative '../lib/params_deserializer'
-
 describe ParamsDeserializer do
   describe '#deserialize' do
     it 'returns a HashWithIndifferentAccess' do

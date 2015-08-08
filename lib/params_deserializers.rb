@@ -1,4 +1,4 @@
-require_relative 'attribute'
-require_relative 'attribute_collection'
-require_relative 'params_deserializer'
-require_relative 'deserialize_params_with'
+require_relative './params_deserializers/attribute'
+require_relative './params_deserializers/attribute_collection'
+require_relative './params_deserializers/params_deserializer'
+require_relative './params_deserializers/deserialize_params_with'
