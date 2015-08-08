@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.authors     = ['Jesse Pinho', 'Trek Glowacki', 'Jim Challenger']
   s.email       = ['jessepinho@groupon.com']
   s.homepage    = 'https://github.groupondev.com/jepinho/params-deserializers'
-  s.license     = 'MIT'
+  s.license     = 'BSD-3-Clause'
 
   s.files = Dir['lib/**/*', 'Rakefile', 'README.md']
 
