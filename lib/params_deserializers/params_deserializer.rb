@@ -1,3 +1,6 @@
+require 'active_support/core_ext/hash/indifferent_access'
+require 'active_support/core_ext/string/inflections'
+
 class ParamsDeserializer
   class MissingRootKeyError < StandardError; end
 

@@ -1,3 +1,5 @@
+require 'rails_helper'
+
 describe 'deserialize_params_with', type: :controller do
   context 'without an explicit method name' do
     controller do
