@@ -28,5 +28,5 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 module ParamsDeserializers
-  VERSION = "0.1.0"
+  VERSION = "1.0.0"
 end
