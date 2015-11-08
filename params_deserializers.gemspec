@@ -36,8 +36,8 @@ Gem::Specification.new do |s|
   s.summary     = 'Deserializers for Rails params'
   s.description = 'Modeled after active_model_serializers, this gem allows you to create deserializer classes for incoming Rails parameters.'
   s.authors     = ['Jesse Pinho', 'Trek Glowacki', 'Jim Challenger']
-  s.email       = ['jessepinho@groupon.com']
-  s.homepage    = 'https://github.groupondev.com/jepinho/params-deserializers'
+  s.email       = ['jesse@jessepinho.com']
+  s.homepage    = 'https://github.com/groupon/params_deserializers'
   s.license     = 'BSD-3-Clause'
 
   s.files = Dir['lib/**/*', 'Rakefile', 'README.md']
