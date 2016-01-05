@@ -69,6 +69,30 @@ describe ParamsDeserializer do
     end
   end
 
+  describe 'strict mode' do
+    subject do
+      Class.new(ParamsDeserializer) do
+        strict true
+        attribute :foo
+        ignore :bar
+      end
+    end
+
+    it 'does not return the ignored attribute' do
+      instance = subject.new({ foo: "foo", bar: "bar" })
+      new_params = instance.deserialize
+
+      expect(new_params).to eql({ "foo" => "foo" })
+    end
+
+    it 'throws an error if given an undefined attribute' do
+      expect {
+        subject.new({ foo: "foo", bar: "bar", baz: "baz", quux: "quux" }).deserialize
+      }.to raise_error(ParamsDeserializer::InvalidKeyError)
+    end
+
+  end
+
   describe 'overrides with context' do
     subject do
       Class.new(ParamsDeserializer) do
