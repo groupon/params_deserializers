@@ -89,7 +89,7 @@ class ParamsDeserializer
   end
 
   def verify_valid_keys
-    invalid_params = params_root.keys - self.class.attrs.map(&:original_name)
+    invalid_params = params_root.keys.reject {|key| self.class.attrs.map(&:original_name).include?(key) }
     if self.class.strict_mode && !invalid_params.blank?
       raise InvalidKeyError, "Invalid keys in params: #{invalid_params.map(&:inspect).join(",")}."
     end
