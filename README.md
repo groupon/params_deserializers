@@ -45,6 +45,29 @@ class UserParamsDeserializer < ParamsDeserializer
 end
 ```
 
+## Strict Mode
+
+Call the class method `strict` to specify that only explicitly defined keys be allowed. An invalid key will raise a `ParamsDeserializer::InvalidKeyError`.
+If you want to use strict mode, but still allow a specific key that will not be automatically transformed in the output, you can use the class method `ignore`.
+
+```ruby
+class UserParamsDeserializer < ParamsDeserializer
+  strict true
+  attribute :firstName
+  ignore :lastName
+end
+
+
+# Incoming hash: { :firstName => "Grace" }
+# Deserialized params: { :first_name => "Grace" }
+
+# Incoming hash: { :firstName => "Grace", :lastName => "Hopper" ]
+# Deserialized params: { :first_name => "Grace" }
+
+# Incoming hash: { :firstName => "Grace", :lastName => "Hopper", :birthday => "12/9/1906" }
+# Result: ParamsDeserializer::InvalidKeyError: Invalid keys in params: :birthday.
+```
+
 ## Renaming params
 
 You can pass an options hash to `attribute`. If you include the `:rename_to` key in the options hash, your deserialized params will contain the renamed key instead of the original:
@@ -56,8 +79,8 @@ class UserParamsDeserializer < ParamsDeserializer
   attribute :birthday
 end
 
-# Incoming hash: { :firstName => "Grace", :lastName => "Hopper, :birthday => "12/9/1906" }
-# Deserialized params: { :first_name => "Grace", :last_name => "Hopper, :birthday => "12/9/1906" }
+# Incoming hash: { :firstName => "Grace", :lastName => "Hopper", :birthday => "12/9/1906" }
+# Deserialized params: { :first_name => "Grace", :last_name => "Hopper", :birthday => "12/9/1906" }
 ```
 
 ## Changing params case
@@ -70,8 +93,8 @@ class UserParamsDeserializer < ParamsDeserializer
   format_keys :snake_case # (or :camel_case or :lower_camel)
 end
 
-# Incoming hash: { :firstName => "Grace", :lastName => "Hopper, :birthday => "12/9/1906" }
-# Deserialized params: { :first_name => "Grace", :last_name => "Hopper, :birthday => "12/9/1906" }
+# Incoming hash: { :firstName => "Grace", :lastName => "Hopper", :birthday => "12/9/1906" }
+# Deserialized params: { :first_name => "Grace", :last_name => "Hopper", :birthday => "12/9/1906" }
 ```
 
 ## Dealing with a root key
@@ -267,7 +290,7 @@ Now, when an API user hits `UsersController#create` with the following JSON payl
 
 ## License
 
-Copyright (c) 2015, Groupon, Inc.  
+Copyright (c) 2015, Groupon, Inc.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:

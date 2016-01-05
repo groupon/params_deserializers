@@ -32,15 +32,17 @@ require 'active_support/core_ext/string/inflections'
 
 class ParamsDeserializer
   class MissingRootKeyError < StandardError; end
+  class InvalidKeyError < StandardError; end
 
   def initialize(params)
     @params = params
     verify_root_key_exists
+    verify_valid_keys
   end
 
   def deserialize
     deserialized_params = {}
-    self.class.attrs.each do |attr|
+    self.class.attrs.unignored.each do |attr|
       next unless instance_exec(&attr.present_if)
       deserialized_params[attr.name] = self.send(attr.name)
     end
@@ -86,10 +88,23 @@ class ParamsDeserializer
     end
   end
 
+  def verify_valid_keys
+    invalid_params = params_root.keys - self.class.attrs.map(&:original_name)
+    if self.class.strict_mode && !invalid_params.blank?
+      raise InvalidKeyError, "Invalid keys in params: #{invalid_params.map(&:inspect).join(",")}."
+    end
+  end
+
   class << self
     attr_reader :root_key
     attr_accessor :key_format
+    attr_accessor :strict_mode
     alias_method :format_keys, :key_format=
+    alias_method :strict, :strict_mode=
+
+    def deserialize(params)
+      new(params).deserialize
+    end
 
     def attrs
       @attrs ||= AttributeCollection.new
@@ -99,6 +114,10 @@ class ParamsDeserializer
       define_getter_method(attr, options) do
         params_root[attr]
       end
+    end
+
+    def ignore(attr)
+      attrs << Attribute.new(attr, ignored: true)
     end
 
     def attributes(*args)
@@ -130,7 +149,7 @@ class ParamsDeserializer
 
     def define_getter_method(attr, options = {}, &block)
       options[:rename_to] ||= attr
-      attrs << Attribute.new(attr, options[:rename_to], options[:present_if])
+      attrs << Attribute.new(attr, options)
       define_method(options[:rename_to], &block) unless method_defined?(options[:rename_to])
     end
   end

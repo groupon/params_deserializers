@@ -39,5 +39,9 @@ class ParamsDeserializer
 
       super
     end
+
+    def unignored
+      reject(&:ignored)
+    end
   end
 end
