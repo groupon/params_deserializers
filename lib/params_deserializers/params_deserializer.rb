@@ -116,8 +116,10 @@ class ParamsDeserializer
       end
     end
 
-    def ignore(attr)
-      attrs << Attribute.new(attr, ignored: true)
+    def ignore(*param_names)
+      param_names.each do |param_name|
+        attrs << Attribute.new(param_name, ignored: true)
+      end
     end
 
     def attributes(*args)
