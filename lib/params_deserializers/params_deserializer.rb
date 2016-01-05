@@ -89,7 +89,7 @@ class ParamsDeserializer
   end
 
   def verify_valid_keys
-    invalid_params = params_root.keys - self.class.attrs.map(&:original_name)
+    invalid_params = params_root.keys.reject {|key| self.class.attrs.map(&:original_name).include?(key) }
     if self.class.strict_mode && !invalid_params.blank?
       raise InvalidKeyError, "Invalid keys in params: #{invalid_params.map(&:inspect).join(",")}."
     end
@@ -116,8 +116,10 @@ class ParamsDeserializer
       end
     end
 
-    def ignore(attr)
-      attrs << Attribute.new(attr, ignored: true)
+    def ignore(*param_names)
+      param_names.each do |param_name|
+        attrs << Attribute.new(param_name, ignored: true)
+      end
     end
 
     def attributes(*args)
