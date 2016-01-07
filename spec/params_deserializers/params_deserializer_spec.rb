@@ -91,6 +91,11 @@ describe ParamsDeserializer do
       }.to raise_error(ParamsDeserializer::InvalidKeyError)
     end
 
+    it 'does not throw an error if the hash is hash with indifferent access' do
+      expect {
+        subject.new({ foo: "foo" }.with_indifferent_access).deserialize
+      }.to_not raise_error
+    end
   end
 
   describe 'overrides with context' do
