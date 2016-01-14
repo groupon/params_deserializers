@@ -1,5 +1,7 @@
 # Params Deserializers
 
+[![Build Status](https://travis-ci.org/groupon/params_deserializers.svg)](https://travis-ci.org/groupon/params_deserializers)
+
 ## Purpose
 
 Modeled after [`active_model_serializers`](https://github.com/rails-api/active_model_serializers), this gem allows you to create deserializer classes to modify incoming parameters in your Rails app.
