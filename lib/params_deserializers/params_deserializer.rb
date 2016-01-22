@@ -102,6 +102,14 @@ class ParamsDeserializer
     alias_method :format_keys, :key_format=
     alias_method :strict, :strict_mode=
 
+    def inherited(subclass)
+      subclass.instance_variable_set(:@attrs, @attrs)
+      subclass.instance_variable_set(:@discard_root_key, @discard_root_key)
+      subclass.instance_variable_set(:@key_format, @key_format)
+      subclass.instance_variable_set(:@root_key, @root_key)
+      subclass.instance_variable_set(:@strict_mode, @strict_mode)
+    end
+
     def deserialize(params)
       new(params).deserialize
     end

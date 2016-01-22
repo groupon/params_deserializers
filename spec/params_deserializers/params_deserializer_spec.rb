@@ -433,4 +433,42 @@ describe ParamsDeserializer do
       end
     end
   end
+
+  describe 'subclass' do
+    it 'inherits attributes' do
+      superclass = Class.new(ParamsDeserializer) { attributes :foo }
+      subclass = Class.new(superclass)
+      params = { foo: :bar }
+
+      expect(subclass.deserialize(params)).to have_key :foo
+    end
+
+    it 'inherits root key' do
+      superclass = Class.new(ParamsDeserializer) { root :foo }
+      subclass = Class.new(superclass)
+
+      expect(subclass.deserialize({ foo: { bar: :baz } })).to have_key :foo
+    end
+
+    it 'inherits discard root key setting' do
+      superclass = Class.new(ParamsDeserializer) { root :foo, discard: true }
+      subclass = Class.new(superclass)
+
+      expect(subclass.deserialize({ foo: { bar: :baz } })).to_not have_key :foo
+    end
+
+    it 'inherits key format' do
+      superclass = Class.new(ParamsDeserializer) { format_keys :lower_camel; attribute :foo_bar }
+      subclass = Class.new(superclass)
+
+      expect(subclass.deserialize({ foo_bar: :baz })).to have_key :fooBar
+    end
+
+    it 'inherits strict mode setting' do
+      superclass = Class.new(ParamsDeserializer) { strict true }
+      subclass = Class.new(superclass)
+
+      expect { subclass.deserialize({ foo: :bar }) }.to raise_error ParamsDeserializer::InvalidKeyError
+    end
+  end
 end
